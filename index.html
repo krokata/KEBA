@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>KEPA Smart Disability Search</title>
+<style>
+body{font-family:Arial;margin:40px;}
+input{width:420px;padding:10px;font-size:16px;}
+.result{border:1px solid #ccc;border-radius:6px;padding:10px;margin:10px 0}
+.percent{color:#b30000;font-weight:bold}
+.page{font-weight:bold;margin-bottom:5px}
+</style>
+</head>
+<body>
+
+<h1>ΚΕΠΑ Smart Search</h1>
+<p>Αναζήτησε πάθηση ή όρο και θα εμφανιστούν γραμμές με πιθανά ποσοστά αναπηρίας.</p>
+
+<input id="q" placeholder="π.χ. διαβήτης, σκλήρυνση, επιληψία..." oninput="search()">
+
+<div id="results"></div>
+
+<script>
+let data=[];
+
+fetch("percentages.json")
+.then(r=>r.json())
+.then(d=>data=d);
+
+function search(){
+ let q=document.getElementById("q").value.toLowerCase();
+ let out="";
+ if(!q){document.getElementById("results").innerHTML="";return;}
+ 
+ data.forEach(r=>{
+   if(r.line.toLowerCase().includes(q)){
+      let line=r.line.replace(/(\d+\s?%)/g,'<span class="percent">$1</span>');
+      out+=`<div class="result">
+      <div class="page">Σελίδα ${r.page}</div>
+      ${line}
+      </div>`;
+   }
+ });
+ 
+ document.getElementById("results").innerHTML=out || "Δεν βρέθηκαν αποτελέσματα";
+}
+</script>
+
+</body>
+</html>
